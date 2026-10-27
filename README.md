@@ -1,0 +1,721 @@
+<!DOCTYPE html>
+<html lang="fr" dir="ltr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Fly & Drive Djerba - Location Voitures & Billets d'Avion</title>
+  
+  <!-- خطوط احترافية تدعم اللغات الثلاث -->
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&family=Cairo:wght@600;700;800&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --primary: #0F4C81;
+      --primary-dark: #0A2F52;
+      --accent: #FF7A00;
+      --bg: #F8FAFC;
+      --surface: #FFFFFF;
+      --text: #0F172A;
+      --text-muted: #64748B;
+      --border: #E2E8F0;
+      --success: #10B981;
+      --danger: #EF4444;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+    body {
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      background: #0B132B;
+      color: var(--text);
+      display: flex;
+      justify-content: center;
+      min-height: 100vh;
+    }
+    body.ar { font-family: 'Cairo', sans-serif; direction: rtl; }
+    
+    .app-container {
+      width: 100%;
+      max-width: 440px;
+      background: var(--bg);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 25px 50px -12px rgba(0,0,0,0.5);
+      position: relative;
+    }
+
+    /* Header */
+    .app-header {
+      background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+      padding: 16px 20px 22px;
+      color: white;
+      border-radius: 0 0 26px 26px;
+    }
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+    .brand-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+    }
+    .lang-switcher {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: white;
+      padding: 6px 12px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 700;
+      outline: none;
+    }
+    .lang-switcher option { color: #0F172A; }
+
+    .service-nav {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      background: rgba(0, 0, 0, 0.2);
+      padding: 5px;
+      border-radius: 16px;
+    }
+    .nav-item {
+      border: none;
+      background: transparent;
+      color: rgba(255,255,255,0.85);
+      padding: 10px;
+      border-radius: 12px;
+      font-weight: 700;
+      font-size: 0.9rem;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: 0.2s;
+    }
+    .nav-item.active {
+      background: white;
+      color: var(--primary-dark);
+    }
+
+    /* Main Content */
+    .main-body {
+      flex: 1;
+      padding: 16px;
+      overflow-y: auto;
+    }
+
+    /* Car Card */
+    .car-card {
+      background: var(--surface);
+      border-radius: 22px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      box-shadow: 0 8px 20px -4px rgba(0,0,0,0.04);
+      margin-bottom: 20px;
+      position: relative;
+    }
+    .card-badge-row {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      right: 12px;
+      display: flex;
+      justify-content: space-between;
+      z-index: 2;
+    }
+    body.ar .card-badge-row { direction: ltr; }
+    .badge {
+      background: rgba(16, 185, 129, 0.95);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 14px;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+    .badge-agency {
+      background: rgba(15, 76, 129, 0.95);
+      color: white;
+      padding: 5px 10px;
+      border-radius: 14px;
+      font-size: 0.72rem;
+      font-weight: 700;
+    }
+    .car-media {
+      height: 180px;
+      width: 100%;
+      background: #E2E8F0;
+    }
+    .car-media img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .card-info { padding: 16px; }
+    .car-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 10px;
+    }
+    .car-name { font-size: 1.15rem; font-weight: 800; color: var(--text); }
+    .features-pill {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+    .pill {
+      background: #F1F5F9;
+      padding: 5px 9px;
+      border-radius: 8px;
+      font-size: 0.72rem;
+      font-weight: 600;
+      color: var(--text-muted);
+    }
+    .price-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 10px;
+      padding-top: 12px;
+      border-top: 1px dashed var(--border);
+    }
+    .price-val {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--primary);
+    }
+    .btn-action {
+      background: var(--accent);
+      color: white;
+      border: none;
+      padding: 10px 18px;
+      border-radius: 14px;
+      font-size: 0.9rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    /* Admin Footer Button */
+    .footer-admin {
+      text-align: center;
+      padding: 10px 0 25px;
+    }
+    .admin-pill {
+      background: #0F172A;
+      color: #94A3B8;
+      padding: 10px 20px;
+      border-radius: 20px;
+      font-size: 0.78rem;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-block;
+    }
+
+    /* Modal Sheets */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(4px);
+      display: none;
+      align-items: flex-end;
+      justify-content: center;
+      z-index: 100;
+    }
+    .sheet-modal {
+      background: white;
+      width: 100%;
+      max-width: 440px;
+      border-radius: 26px 26px 0 0;
+      padding: 20px 18px 30px;
+      max-height: 85vh;
+      overflow-y: auto;
+    }
+    .admin-tabs {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 16px;
+      background: #F1F5F9;
+      padding: 4px;
+      border-radius: 12px;
+    }
+    .adm-tab-btn {
+      flex: 1;
+      border: none;
+      background: transparent;
+      padding: 8px 4px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      border-radius: 9px;
+      cursor: pointer;
+    }
+    .adm-tab-btn.active {
+      background: white;
+      color: var(--primary);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    }
+    .form-group {
+      margin-bottom: 12px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-muted);
+      margin-bottom: 4px;
+    }
+    .form-group input, .form-group select {
+      width: 100%;
+      padding: 10px 12px;
+      border-radius: 10px;
+      border: 1.5px solid var(--border);
+      font-size: 0.9rem;
+      font-weight: 600;
+      outline: none;
+    }
+    .items-list {
+      background: #F8FAFC;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 10px;
+      margin-bottom: 14px;
+    }
+    .list-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #E2E8F0;
+      font-size: 0.82rem;
+      font-weight: 600;
+    }
+    .list-item:last-child { border-bottom: none; }
+    .del-btn {
+      background: #FEE2E2;
+      color: var(--danger);
+      border: none;
+      padding: 4px 8px;
+      border-radius: 6px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body class="fr" id="appBody">
+
+  <div class="app-container">
+    
+    <!-- Top Header -->
+    <header class="app-header">
+      <div class="header-top">
+        <div class="brand-title" id="logoText">✈️ Fly & Drive Djerba</div>
+        <select class="lang-switcher" onchange="changeLanguage(this.value)">
+          <option value="fr" selected>🇫🇷 Français</option>
+          <option value="ar">🇹🇳 العربية</option>
+          <option value="en">🇬🇧 English</option>
+        </select>
+      </div>
+
+      <div class="service-nav">
+        <button class="nav-item active" id="btnTabCar" onclick="selectService('cars')">
+          🚗 <span id="lblCars">Voitures</span>
+        </button>
+        <button class="nav-item" id="btnTabFlight" onclick="selectService('flights')">
+          ✈️ <span id="lblFlights">Vols Djerba</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="main-body">
+
+      <!-- 1. SECTION VOITURES -->
+      <section id="sectionCars">
+        <div id="carsContainer">
+          <!-- Les voitures s'affichent dynamiquement ici -->
+        </div>
+      </section>
+
+      <!-- 2. SECTION VOLS -->
+      <section id="sectionFlights" style="display: none;">
+        <div style="background:white; border-radius:20px; padding:20px; border:1px solid var(--border);">
+          <h3 style="color:var(--primary); margin-bottom:12px;" id="flHeading">Demander un Vol vers Djerba</h3>
+          <div class="form-group">
+            <label id="flLblDep">Ville de départ</label>
+            <input type="text" id="flDepCity" placeholder="Ex: Paris (ORY/CDG), Lyon, Tunis...">
+          </div>
+          <div class="form-group">
+            <label id="flLblArr">Aéroport d'Arrivée</label>
+            <input type="text" value="Djerba-Zarzis (DJE)" readonly style="background:#F1F5F9;">
+          </div>
+          <div class="form-group">
+            <label id="flLblDate">Date souhaitée</label>
+            <input type="date" id="flDate">
+          </div>
+          <button class="btn-action" style="width:100%; background:var(--primary); padding:14px;" onclick="sendFlightWhatsApp()">
+            <span id="flBtnSend">Trouver le Meilleur Billet</span> ✈️
+          </button>
+        </div>
+      </section>
+
+      <!-- المفتاح السري للإدارة (قلالة) -->
+      <div class="footer-admin">
+        <div class="admin-pill" onclick="promptAdminPin()">
+          🔒 مفتاح إدارة الشركات والأسطول (قلالة)
+        </div>
+      </div>
+
+    </main>
+
+  </div>
+
+  <!-- MODAL: RESERVATION VOITURE -->
+  <div class="modal-overlay" id="bookingModal">
+    <div class="sheet-modal">
+      <h3 style="color:var(--primary); margin-bottom:6px;" id="bkTitle">Réservation Immédiate</h3>
+      <p style="font-size:0.78rem; color:var(--text-muted); margin-bottom:14px;">Livraison à l'Aéroport International de Djerba</p>
+
+      <div class="form-group">
+        <label>Nom & Prénom</label>
+        <input type="text" id="custName" placeholder="Ex: Jean Dupont">
+      </div>
+      <div class="form-group">
+        <label>Date et heure d'arrivée à Djerba</label>
+        <input type="datetime-local" id="custArrival">
+      </div>
+      <div class="form-group">
+        <label>Durée de location (Jours)</label>
+        <select id="custDays">
+          <option value="3">3 Jours</option>
+          <option value="7" selected>7 Jours (1 Semaine)</option>
+          <option value="10">10 Jours</option>
+          <option value="14">14 Jours</option>
+        </select>
+      </div>
+
+      <button class="btn-action" style="width:100%; padding:14px; margin-bottom:6px;" onclick="confirmCarWhatsApp()">
+        Valider sur WhatsApp 📲
+      </button>
+      <button style="width:100%; border:none; background:transparent; padding:10px; color:#94A3B8; font-weight:700;" onclick="closeModal('bookingModal')">
+        Annuler
+      </button>
+    </div>
+  </div>
+
+  <!-- MODAL: مفتاح الإدارة الكامل -->
+  <div class="modal-overlay" id="adminModal">
+    <div class="sheet-modal">
+      <h3 style="margin-bottom:12px; font-size:1.1rem;">⚙️ لوحة إدارة الوكالات والسيارات</h3>
+
+      <!-- أزرار التبويب داخل لوحة التحكم -->
+      <div class="admin-tabs">
+        <button class="adm-tab-btn active" id="btnAdmTabCars" onclick="switchAdminTab('cars')">🚗 أسطول السيارات</button>
+        <button class="adm-tab-btn" id="btnAdmTabAgencies" onclick="switchAdminTab('agencies')">🏢 الوكالات بجربة</button>
+        <button class="adm-tab-btn" id="btnAdmTabGeneral" onclick="switchAdminTab('general')">⚙️ الإعدادات</button>
+      </div>
+
+      <!-- تبويب 1: إضافة سيارة -->
+      <div id="admSectionCars">
+        <div class="items-list" id="carsMiniList"></div>
+
+        <h4 style="font-size:0.85rem; margin-bottom:8px;">+ إضافة سيارة جديدة للأسطول:</h4>
+        <div class="form-group">
+          <label>اسم وموديل السيارة:</label>
+          <input type="text" id="newCarModel" placeholder="مثال: Renault Clio 5 أو Dacia Duster">
+        </div>
+        <div class="form-group">
+          <label>تابعة لأي وكالة كراء؟</label>
+          <select id="newCarAgency"></select>
+        </div>
+        <div class="form-group">
+          <label>السعر لليوم الواحد (€ يورو):</label>
+          <input type="number" id="newCarPrice" value="30">
+        </div>
+        <div class="form-group">
+          <label>اختر صورة السيارة:</label>
+          <select id="newCarPhoto">
+            <option value="https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=600&q=80">رينو كليو 5 (Renault Clio)</option>
+            <option value="https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=600&q=80">داسيا داستر 4x4 (Dacia Duster)</option>
+            <option value="https://images.unsplash.com/photo-1552519507-da3b142c6e3d?auto=format&fit=crop&w=600&q=80">سيارة اقتصادية صغيرة (Citadine)</option>
+            <option value="https://images.unsplash.com/photo-1503376780353-7e6692767b70?auto=format&fit=crop&w=600&q=80">سيارة فخمة / SUV</option>
+          </select>
+        </div>
+        <button class="btn-action" style="width:100%; background:var(--success); padding:12px; margin-bottom:10px;" onclick="addNewCar()">
+          نشر السيارة في التطبيق فوراً ✅
+        </button>
+      </div>
+
+      <!-- تبويب 2: إضافة وكالة -->
+      <div id="admSectionAgencies" style="display:none;">
+        <div class="items-list" id="agenciesMiniList"></div>
+
+        <h4 style="font-size:0.85rem; margin-bottom:8px;">+ إضافة شركة كراء سيارات جديدة:</h4>
+        <div class="form-group">
+          <label>اسم الوكالة:</label>
+          <input type="text" id="newAgencyName" placeholder="مثال: وكالة الأمل - حومة السوق">
+        </div>
+        <div class="form-group">
+          <label>مقرها في جربة:</label>
+          <input type="text" id="newAgencyCity" placeholder="مثال: ميدون، حومة السوق، المطار">
+        </div>
+        <button class="btn-action" style="width:100%; background:var(--primary); padding:12px; margin-bottom:10px;" onclick="addNewAgency()">
+          تسجيل الوكالة ✅
+        </button>
+      </div>
+
+      <!-- تبويب 3: الإعدادات العامة -->
+      <div id="admSectionGeneral" style="display:none;">
+        <div class="form-group">
+          <label>اسم المنصة:</label>
+          <input type="text" id="admAppName" value="Fly & Drive Djerba">
+        </div>
+        <div class="form-group">
+          <label>رقم هاتف الواتساب المعتمد:</label>
+          <input type="text" id="admPhone" value="21622750578">
+        </div>
+        <div class="form-group">
+          <label>المقر الرئيسي:</label>
+          <input type="text" id="admAddress" value="Guellala, Djerba">
+        </div>
+        <button class="btn-action" style="width:100%; background:var(--primary); padding:12px; margin-bottom:10px;" onclick="saveGeneralSettings()">
+          حفظ التعديلات العامة
+        </button>
+      </div>
+
+      <button style="width:100%; border:none; background:#E2E8F0; padding:10px; border-radius:10px; font-weight:700;" onclick="closeModal('adminModal')">
+        إغلاق المفتاح
+      </button>
+    </div>
+  </div>
+
+  <script>
+    // البيانات الافتراضية الأولية
+    let defaultAgencies = [
+      { id: 1, name: "وكالة الأمل (El Amal)", city: "حومة السوق" },
+      { id: 2, name: "ديار جربة كار (Djerba Wheels)", city: "ميدون / المنطقة السياحية" }
+    ];
+
+    let defaultCars = [
+      {
+        id: 1,
+        model: "Renault Clio 5",
+        agency: "وكالة الأمل (El Amal)",
+        priceEUR: 30,
+        priceTND: 100,
+        specs: "❄️ Climatisée • 🕹️ Manuelle • 👥 5 Places",
+        img: "https://images.unsplash.com/photo-1549399542-7e3f8b79c341?auto=format&fit=crop&w=600&q=80"
+      },
+      {
+        id: 2,
+        model: "Dacia Duster 4x4",
+        agency: "ديار جربة كار (Djerba Wheels)",
+        priceEUR: 45,
+        priceTND: 150,
+        specs: "❄️ Clim • 🚙 4x4 Robuste • 👥 Grand Coffre",
+        img: "https://images.unsplash.com/photo-1541899481282-d53bffe3c35d?auto=format&fit=crop&w=600&q=80"
+      }
+    ];
+
+    // القراءة من الذاكرة المحلية لهاتف محسن
+    let agencies = JSON.parse(localStorage.getItem('fnd_agencies')) || defaultAgencies;
+    let cars = JSON.parse(localStorage.getItem('fnd_cars')) || defaultCars;
+    let adminData = JSON.parse(localStorage.getItem('fnd_settings')) || {
+      phone: "21622750578",
+      appName: "Fly & Drive Djerba",
+      address: "Guellala, Djerba"
+    };
+
+    let selectedCar = null;
+
+    // مصفوفة اللغات
+    const i18n = {
+      fr: {
+        dir: "ltr", cars: "Voitures", flights: "Vols Djerba",
+        delivery: "🟢 Livraison Aéroport Gratuit",
+        bookBtn: "Réserver", perDay: "€ / jour",
+        flHead: "Demander un Vol vers Djerba", flBtn: "Trouver le Meilleur Billet",
+        flDep: "Ville de départ", flArr: "Aéroport d'Arrivée", flDate: "Date souhaitée"
+      },
+      ar: {
+        dir: "rtl", cars: "كراء السيارات", flights: "تذاكر طيران جربة",
+        delivery: "🟢 تسليم مجاني بمطار جربة",
+        bookBtn: "احجز بالمطار", perDay: "د.ت / اليوم",
+        flHead: "طلب حجز طيران إلى جربة", flBtn: "طلب أفضل سعر تذكرة",
+        flDep: "مدينة الانطلاق", flArr: "مطار الوصول", flDate: "تاريخ السفر"
+      },
+      en: {
+        dir: "ltr", cars: "Cars", flights: "Djerba Flights",
+        delivery: "🟢 Free Airport Delivery",
+        bookBtn: "Book Now", perDay: "$ / day",
+        flHead: "Request Flight to Djerba", flBtn: "Find Best Flight Deal",
+        flDep: "Departure City", flArr: "Arrival Airport", flDate: "Travel Date"
+      }
+    };
+
+    function renderCars() {
+      const container = document.getElementById('carsContainer');
+      const isAr = document.getElementById('appBody').classList.contains('ar');
+      const lang = document.querySelector('.lang-switcher').value;
+      const t = i18n[lang];
+
+      container.innerHTML = "";
+
+      cars.forEach(car => {
+        const displayPrice = isAr ? `${car.priceTND} د.ت / اليوم` : `${car.priceEUR} € / jour`;
+
+        const card = document.createElement('article');
+        card.className = "car-card";
+        card.innerHTML = `
+          <div class="card-badge-row">
+            <span class="badge">${t.delivery}</span>
+            <span class="badge-agency">${car.agency}</span>
+          </div>
+          <div class="car-media">
+            <img src="${car.img}" alt="${car.model}">
+          </div>
+          <div class="card-info">
+            <div class="car-header">
+              <div class="car-name">${car.model}</div>
+              <div style="font-weight:800; color:var(--primary);">⭐ 4.9</div>
+            </div>
+            <div class="features-pill">
+              <span class="pill">${car.specs}</span>
+            </div>
+            <div class="price-row">
+              <div class="price-val">${displayPrice}</div>
+              <button class="btn-action" onclick="openBookingModal('${car.model}', ${car.priceEUR}, '${car.agency}')">
+                ${t.bookBtn} 📲
+              </button>
+            </div>
+          </div>
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    function changeLanguage(lang) {
+      const data = i18n[lang];
+      const body = document.getElementById('appBody');
+      body.className = lang;
+      body.dir = data.dir;
+
+      document.getElementById('lblCars').innerText = data.cars;
+      document.getElementById('lblFlights').innerText = data.flights;
+      document.getElementById('flHeading').innerText = data.flHead;
+      document.getElementById('flLblDep').innerText = data.flDep;
+      document.getElementById('flLblArr').innerText = data.flArr;
+      document.getElementById('flLblDate').innerText = data.flDate;
+      document.getElementById('flBtnSend').innerText = data.flBtn;
+
+      renderCars();
+    }
+
+    function selectService(type) {
+      const isCar = type === 'cars';
+      document.getElementById('sectionCars').style.display = isCar ? 'block' : 'none';
+      document.getElementById('sectionFlights').style.display = isCar ? 'none' : 'block';
+      document.getElementById('btnTabCar').className = isCar ? 'nav-item active' : 'nav-item';
+      document.getElementById('btnTabFlight').className = isCar ? 'nav-item' : 'nav-item active';
+    }
+
+    function openBookingModal(model, price, agency) {
+      selectedCar = { model, price, agency };
+      document.getElementById('bookingModal').style.display = 'flex';
+    }
+
+    function closeModal(id) {
+      document.getElementById(id).style.display = 'none';
+    }
+
+    function confirmCarWhatsApp() {
+      const name = document.getElementById('custName').value || 'Client';
+      const arrival = document.getElementById('custArrival').value || 'Non précisé';
+      const days = document.getElementById('custDays').value;
+      const totalEUR = days * selectedCar.price;
+      const totalTND = Math.round(totalEUR * 3.3);
+
+      const msg = `👋 Bonjour Mohsen,%0A%0AJe souhaite réserver une voiture via *${adminData.appName}* :%0A%0A🚗 *Véhicule :* ${selectedCar.model}%0A🏢 *Agence :* ${selectedCar.agency}%0A👤 *Client :* ${name}%0A📅 *Arrivée Djerba :* ${arrival}%0A⏳ *Durée :* ${days} Jours%0A💰 *Montant :* ${totalEUR} € (~ ${totalTND} TND)%0A📍 *Livraison :* Aéroport Djerba-Zarzis (DJE)`;
+
+      window.open(`https://wa.me/${adminData.phone}?text=${msg}`, '_blank');
+      closeModal('bookingModal');
+    }
+
+    function sendFlightWhatsApp() {
+      const dep = document.getElementById('flDepCity').value || 'Europe/Tunisie';
+      const date = document.getElementById('flDate').value || 'Flexible';
+
+      const msg = `👋 Bonjour Mohsen,%0A%0AJe recherche un vol vers Djerba via *${adminData.appName}* :%0A%0A🛫 *Départ :* ${dep}%0A🛬 *Arrivée :* Djerba-Zarzis (DJE)%0A📅 *Date :* ${date}`;
+
+      window.open(`https://wa.me/${adminData.phone}?text=${msg}`, '_blank');
+    }
+
+    /* مفتاح الإدارة - PIN */
+    function promptAdminPin() {
+      const pin = prompt("الرجاء إدخال الرمز السري لمفتاح الإدارة:");
+      if (pin === "1234") {
+        refreshAdminLists();
+        document.getElementById('admAppName').value = adminData.appName;
+        document.getElementById('admPhone').value = adminData.phone;
+        document.getElementById('admAddress').value = adminData.address;
+        document.getElementById('adminModal').style.display = 'flex';
+      } else if (pin !== null) {
+        alert("❌ الرمز السري غير صحيح!");
+      }
+    }
+
+    function switchAdminTab(tab) {
+      document.getElementById('admSectionCars').style.display = tab === 'cars' ? 'block' : 'none';
+      document.getElementById('admSectionAgencies').style.display = tab === 'agencies' ? 'block' : 'none';
+      document.getElementById('admSectionGeneral').style.display = tab === 'general' ? 'block' : 'none';
+
+      document.getElementById('btnAdmTabCars').className = tab === 'cars' ? 'adm-tab-btn active' : 'adm-tab-btn';
+      document.getElementById('btnAdmTabAgencies').className = tab === 'agencies' ? 'adm-tab-btn active' : 'adm-tab-btn';
+      document.getElementById('btnAdmTabGeneral').className = tab === 'general' ? 'adm-tab-btn active' : 'adm-tab-btn';
+    }
+
+    function refreshAdminLists() {
+      // تحديث قائمة الوكالات في خانة السيارات
+      const sel = document.getElementById('newCarAgency');
+      sel.innerHTML = "";
+      agencies.forEach(a => {
+        sel.innerHTML += `<option value="${a.name}">${a.name} (${a.city})</option>`;
+      });
+
+      // قائمة الوكالات
+      const agList = document.getElementById('agenciesMiniList');
+      agList.innerHTML = `<h5 style="margin-bottom:6px;">الشركات المسجلة حالياً:</h5>`;
+      agencies.forEach((a, idx) => {
+        agList.innerHTML += `
+          <div class="list-item">
+            <span>${a.name} - <small style="color:#666">${a.city}</small></span>
+            <button class="del-btn" onclick="deleteAgency(${idx})">حذف</button>
+          </div>
+        `;
+      });
+
+      // قائمة السيارات
+      const carList = document.getElementById('carsMiniList');
+      carList.innerHTML = `<h5 style="margin-bottom:6px;">السيارات المعروضة:</h5>`;
+      cars.forEach((c, idx) => {
+        carList.innerHTML += `
+          <div class="list-item">
+            <span>${c.model} (${c.priceEUR}€) - <small style="color:#666">${c.agency}</small></span>
+            <button class="del-btn" onclick="deleteCar(${idx})">حذف</button>
+          </div>
+        `;
+      });
+    }
+
+    function addNewAgency() {
+      const name = document.getElementById('newAgencyName').value;
+      const city = document.getElementById('newAgencyCity').value;
+      if (!name || !city) return alert("يرجى إدخال اسم الوكالة ومقرها!");
+
+      agencies.push({ id: Date.now(), name, city });
+      
